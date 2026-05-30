@@ -1,8 +1,5 @@
 {$HOST_NAME} {
-    # This technically allows any caddy entry to be added here
-    # But we'll just use it for TLS
     {$TLS_OPTS}
-
     encode gzip
 
     header {
@@ -18,7 +15,7 @@
 
     handle /api/* {
         header Content-Security-Policy "default-src 'none'"
-        reverse_proxy http://api:3000
+        reverse_proxy http://phatcrack-api:3000
     }
 
     handle {
@@ -27,4 +24,64 @@
         try_files {path} /index.html
         file_server
     }
+}
+
+# Linkwarden bookmark manager
+links.lan {
+    {$TLS_OPTS}
+    reverse_proxy linkwarden:3000
+}
+
+# AdGuard Home DNS dashboard
+adguard.lan {
+    {$TLS_OPTS}
+    reverse_proxy adguardhome:81
+}
+
+# WireGuard Easy Web UI Management Console
+vpn.lan {
+    {$TLS_OPTS}
+    reverse_proxy host.docker.internal:51821
+}
+
+# OneDev Git Platform
+git.lan {
+    {$TLS_OPTS}
+    request_body {
+        max_size 512MiB
+    }
+    reverse_proxy onedev:6610 {
+        header_up Host {upstream_hostport}
+        header_up X-Forwarded-Host {host}
+    }
+}
+
+# Calibre Web digital library
+books.lan {
+    {$TLS_OPTS}
+    reverse_proxy calibre-web:8083
+}
+
+# Home Assistant Smart Home Hub
+home.lan {
+    {$TLS_OPTS}
+    reverse_proxy host.docker.internal:8123
+}
+
+# Pingvin Share (File sharing)
+share.lan {
+    {$TLS_OPTS}
+    reverse_proxy pingvin-share:3000
+}
+
+# MeTube Video Downloader
+metube.lan {
+    {$TLS_OPTS}
+    reverse_proxy metube:8081
+}
+
+# IT-Tools 
+tools.lan {
+    {$TLS_OPTS}
+    reverse_proxy it-tools:80
 }
